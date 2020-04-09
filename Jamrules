@@ -4,7 +4,10 @@
 
 BUILD ?= RELEASE ;
 #USESDL ?= yes ;
+STATIC = yes ;
+
 USEBABEL ?= no ;
+
 MAC_USEHOMEBREW ?= no ;
 MACOS_MIN_VER ?= 10.7 ;
 # bloat
