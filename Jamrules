@@ -3,11 +3,12 @@
 #
 
 BUILD ?= RELEASE ;
-USESDL ?= yes ;
-USEBABEL ?= yes ;
+#USESDL ?= yes ;
+USEBABEL ?= no ;
 MAC_USEHOMEBREW ?= no ;
 MACOS_MIN_VER ?= 10.7 ;
-BUNDLEFONTS ?= yes ;
+# bloat
+# BUNDLEFONTS ?= no ;
 USETTS ?= no ;
 
 # jam -sGUILIB=EFL

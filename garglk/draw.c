@@ -21,6 +21,9 @@
  *                                                                            *
  *****************************************************************************/
 
+#define FONT_NO_OBLIQUE_BOLD
+#define FONT_NO_LIGATURES
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -349,7 +352,7 @@ static void loadfont(font_t *f, char *name, float size, float aspect, int style)
     f->highentries = NULL;
     f->kerned = FT_HAS_KERNING(f->face);
     f->kerncache = NULL;
-
+#if !defined FONT_NO_OBLIQUE_BOLD
     switch (style)
     {
         case FONTR:
@@ -372,6 +375,10 @@ static void loadfont(font_t *f, char *name, float size, float aspect, int style)
             f->make_oblique = !(f->face->style_flags & FT_STYLE_FLAG_ITALIC);
             break;
     }
+#else
+    f->make_bold = FALSE;
+    f->make_oblique = FALSE;
+#endif
 }
 
 void gli_initialize_fonts(void)
@@ -653,21 +660,25 @@ static void getglyph(font_t *f, glui32 cid, int *adv, bitmap_t **glyphs)
 int gli_string_width(int fidx, unsigned char *s, int n, int spw)
 {
     font_t *f = &gfont_table[fidx];
+#if !defined FONT_NO_LIGATURES
     int dolig = ! FT_IS_FIXED_WIDTH(f->face);
+#else
+    int dolig=0;
+#endif
     int prev = -1;
     int w = 0;
-
+#if !defined FONT_NO_LIGATURES
     if ( FT_Get_Char_Index(f->face, UNI_LIG_FI) == 0 )
         dolig = 0;
     if ( FT_Get_Char_Index(f->face, UNI_LIG_FL) == 0 )
         dolig = 0;
-
+#endif
     while (n--)
     {
         bitmap_t *glyphs;
         int adv;
         int c = touni(*s++);
-
+#if !defined FONT_NO_LIGATURES
         if (dolig && n && c == 'f' && *s == 'i')
         {
           c = UNI_LIG_FI;
@@ -680,7 +691,7 @@ int gli_string_width(int fidx, unsigned char *s, int n, int spw)
           s++;
           n--;
         }
-
+#endif
         getglyph(f, c, &adv, &glyphs);
 
         if (prev != -1)
@@ -701,23 +712,27 @@ int gli_draw_string(int x, int y, int fidx, unsigned char *rgb,
         unsigned char *s, int n, int spw)
 {
     font_t *f = &gfont_table[fidx];
+#if !defined FONT_NO_LIGATURES
     int dolig = ! FT_IS_FIXED_WIDTH(f->face);
+#else
+    int dolig = 0;
+#endif
     int prev = -1;
     glui32 c;
     int px, sx;
-
+#if !defined FONT_NO_LIGATURES
     if ( FT_Get_Char_Index(f->face, UNI_LIG_FI) == 0 )
         dolig = 0;
     if ( FT_Get_Char_Index(f->face, UNI_LIG_FL) == 0 )
         dolig = 0;
-
+#endif
     while (n--)
     {
         bitmap_t *glyphs;
         int adv;
 
         c = touni(*s++);
-
+#if !defined FONT_NO_LIGATURES
         if (dolig && n && c == 'f' && *s == 'i')
         {
           c = UNI_LIG_FI;
@@ -730,7 +745,7 @@ int gli_draw_string(int x, int y, int fidx, unsigned char *rgb,
           s++;
           n--;
         }
-
+#endif
         getglyph(f, c, &adv, &glyphs);
 
         if (prev != -1)
@@ -759,23 +774,27 @@ int gli_draw_string_uni(int x, int y, int fidx, unsigned char *rgb,
         glui32 *s, int n, int spw)
 {
     font_t *f = &gfont_table[fidx];
+#if !defined FONT_NO_LIGATURES
     int dolig = ! FT_IS_FIXED_WIDTH(f->face);
+#else
+    int dolig = 0;
+#endif
     int prev = -1;
     glui32 c;
     int px, sx;
-
+#if !defined FONT_NO_LIGATURES
     if ( FT_Get_Char_Index(f->face, UNI_LIG_FI) == 0 )
         dolig = 0;
     if ( FT_Get_Char_Index(f->face, UNI_LIG_FL) == 0 )
         dolig = 0;
-
+#endif
     while (n--)
     {
         bitmap_t *glyphs;
         int adv;
 
         c = *s++;
-
+#if !defined FONT_NO_LIGATURES
         if (dolig && n && c == 'f' && *s == 'i')
         {
           c = UNI_LIG_FI;
@@ -788,7 +807,7 @@ int gli_draw_string_uni(int x, int y, int fidx, unsigned char *rgb,
           s++;
           n--;
         }
-
+#endif
         getglyph(f, c, &adv, &glyphs);
 
         if (prev != -1)
@@ -816,21 +835,25 @@ int gli_draw_string_uni(int x, int y, int fidx, unsigned char *rgb,
 int gli_string_width_uni(int fidx, glui32 *s, int n, int spw)
 {
     font_t *f = &gfont_table[fidx];
+#if !defined FONT_NO_LIGATURES
     int dolig = ! FT_IS_FIXED_WIDTH(f->face);
+#else
+    int dolig = 0;
+#endif
     int prev = -1;
     int w = 0;
-
+#if !defined FONT_NO_LIGATURES
     if ( FT_Get_Char_Index(f->face, UNI_LIG_FI) == 0 )
         dolig = 0;
     if ( FT_Get_Char_Index(f->face, UNI_LIG_FL) == 0 )
         dolig = 0;
-
+#endif
     while (n--)
     {
         bitmap_t *glyphs;
         int adv;
         int c = *s++;
-
+#if !defined FONT_NO_LIGATURES
         if (dolig && n && c == 'f' && *s == 'i')
         {
           c = UNI_LIG_FI;
@@ -843,7 +866,7 @@ int gli_string_width_uni(int fidx, glui32 *s, int n, int spw)
           s++;
           n--;
         }
-
+#endif
         getglyph(f, c, &adv, &glyphs);
 
         if (prev != -1)
